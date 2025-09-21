@@ -152,7 +152,12 @@ func handleInit(S3 *S3Options, req api.Request) {
 
 func handleDownload(S3 *S3Options, req api.Request) {
 	fmt.Fprintf(S3.ProgressTracker.ErrWriter, "Received download request for %s\n", req.Oid)
-	localPath := fmt.Sprintf(".git/lfs/objects/%s/%s/%s", req.Oid[:2], req.Oid[2:4], req.Oid)
+	var localPath string
+	if req.Path != "" {
+		localPath = req.Path
+	} else {
+		localPath = fmt.Sprintf(".git/lfs/objects/%s/%s/%s", req.Oid[:2], req.Oid[2:4], req.Oid)
+	}
 	S3.updateFromRequest(&req)
 	file, err := os.Create(localPath)
 	if err != nil {
@@ -202,7 +207,12 @@ func handleDownload(S3 *S3Options, req api.Request) {
 
 func handleUpload(S3 *S3Options, req api.Request) {
 	fmt.Fprintf(S3.ProgressTracker.ErrWriter, "Received upload request for %s\n", req.Oid)
-	localPath := fmt.Sprintf(".git/lfs/objects/%s/%s/%s", req.Oid[:2], req.Oid[2:4], req.Oid)
+	var localPath string
+	if req.Path != "" {
+		localPath = req.Path
+	} else {
+		localPath = fmt.Sprintf(".git/lfs/objects/%s/%s/%s", req.Oid[:2], req.Oid[2:4], req.Oid)
+	}
 	S3.updateFromRequest(&req)
 	file, err := os.Open(localPath)
 	if err != nil {
