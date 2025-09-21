@@ -171,7 +171,7 @@ func handleDownload(S3 *S3Options, req api.Request) {
 
 	if S3.CDN != "" {
 		// Get File
-		resp, err := http.Get(S3.CDN + "/" + req.Oid)
+		resp, err := http.Get(fmt.Sprintf("%s/%s/%s/%s", S3.CDN, req.Oid[:2], req.Oid[2:4], req.Oid))
 		if err != nil {
 			fmt.Fprintf(S3.ProgressTracker.ErrWriter, fmt.Sprintf("Error downloading file: %v\n", err))
 			return
@@ -194,7 +194,7 @@ func handleDownload(S3 *S3Options, req api.Request) {
 
 		_, err = downloader.Download(context.Background(), S3.ProgressTracker, &s3.GetObjectInput{
 			Bucket: aws.String(S3.Bucket),
-			Key:    aws.String(req.Oid),
+			Key:    aws.String(fmt.Sprintf("%s/%s/%s", req.Oid[:2], req.Oid[2:4], req.Oid)),
 		})
 	}
 
@@ -233,7 +233,7 @@ func handleUpload(S3 *S3Options, req api.Request) {
 
 	_, err = uploader.Upload(context.Background(), &s3.PutObjectInput{
 		Bucket: aws.String(S3.Bucket),
-		Key:    aws.String(req.Oid),
+		Key:    aws.String(fmt.Sprintf("%s/%s/%s", req.Oid[:2], req.Oid[2:4], req.Oid)),
 		Body:   S3.ProgressTracker,
 	})
 
